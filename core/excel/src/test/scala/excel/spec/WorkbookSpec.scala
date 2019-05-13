@@ -2,8 +2,8 @@ package excel.spec
 
 import excel.address.{ AreaAddress, SheetAddress }
 import excel.book.Book
+import excel.decoder.RowDecoder
 import excel.decoder.implicits._
-import excel.decoder.row.RowDecoder
 import excel.ops._
 import org.apache.poi.ss.usermodel.Workbook
 import org.scalatest._

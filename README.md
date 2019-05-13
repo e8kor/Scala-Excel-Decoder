@@ -7,7 +7,7 @@ import cats.implicits._
 import excel.address.SheetAddress
 import excel.book.Book
 import excel.decoder.implicits._
-import excel.decoder.row.RowDecoder
+import .RowDecoder
 import excel.ops._
 import org.apache.poi.ss.usermodel.Workbook
 

@@ -2,11 +2,12 @@ package excel
 
 import cats.implicits._
 import excel.address.Address
-import excel.decoder.Decoder
-import excel.decoder.cell.CellDecoder
-import excel.decoder.row.RowDecoder
+import excel.decoder._
 import org.apache.poi.ss.usermodel._
 
+/**
+ * Set of ops implicits for apache poi types
+ */
 package object ops {
 
   implicit class CellOps(val it: Cell) extends AnyVal {
