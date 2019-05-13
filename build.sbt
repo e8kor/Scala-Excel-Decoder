@@ -16,7 +16,6 @@ val bsettings = Seq(
     "-Ypartial-unification"
   ),
   crossScalaVersions := Seq("2.11.12", "2.12.8"),
-  publishTo := Some(Resolver.file("file", new File(Path.userHome.absolutePath + "/.m2/repository"))),
   addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.3" cross CrossVersion.binary)
 )
 
