@@ -39,6 +39,7 @@ lazy val excel = project.in(file("core/excel"))
       "org.typelevel" %% "cats-testkit" % "1.6.0"
     ),
     libraryDependencies ++= Seq(
+      "com.chuusai" %% "shapeless" % "2.3.3",
       "io.tmos" %% "arm4s" % "1.1.0",
       "org.typelevel" %% "cats-core" % "1.6.0",
       "org.apache.poi" % "poi-ooxml" % "4.1.0"

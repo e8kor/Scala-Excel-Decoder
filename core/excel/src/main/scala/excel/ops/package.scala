@@ -23,10 +23,20 @@ package object ops {
 
   }
 
+  implicit class RowsOps(val it: List[List[Cell]]) extends AnyVal {
+    import scala.language.postfixOps
+
+    def decode[T](implicit dec: RowDecoder[T]): Decoder.Result[List[T]] = {
+      it traverse (_ decode)
+    }
+
+  }
+
   implicit class BookOps(val book: Workbook) extends AnyVal {
+    import scala.language.postfixOps
 
     def apply[T: RowDecoder](address: Address): Decoder.Result[List[T]] = {
-      address.rows(book).flatMap(_.traverse(_.decode[T]))
+      (address rows book) >>= (_ decode)
     }
 
   }

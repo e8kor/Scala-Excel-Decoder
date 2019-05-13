@@ -14,9 +14,7 @@ import org.apache.poi.ss.usermodel.Workbook
 case class Employee(id: Int, name: String, surname: String, title: String)
 
 object Employee {
-
-  implicit val dec: RowDecoder[Employee] = product4[Int, String, String, String].map((Employee.apply _).tupled)
-
+  implicit val dec: RowDecoder[Employee] = Employee.apply _
 }
 
 for {
