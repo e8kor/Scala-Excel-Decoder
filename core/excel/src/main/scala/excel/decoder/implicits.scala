@@ -6,32 +6,52 @@ import excel.decoder.row.{ RowDecoder => RD }
 import excel.exceptions.ParseError
 import excel.ops._
 import java.time._
+import java.util.Date
 import org.apache.poi.ss.usermodel._
 import scala.Predef.doubleWrapper
 
 private[decoder] trait CellImplicits {
 
-  private def doubleToInt(d: Double): Option[Int] =
-    if (d.isValidInt) Some(d.toInt) else None
-
   implicit val stringCD: CD[String] = (cell: Cell) =>
-    Either.catchNonFatal(cell.getStringCellValue).leftMap(ParseError(cell, _))
+    cell.getCellType match {
+      case CellType.STRING  => Right(cell.getStringCellValue)
+      case CellType.BOOLEAN => Right(cell.getBooleanCellValue.toString)
+      case CellType.NUMERIC => Right(cell.getNumericCellValue.toString)
+      case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as string"))
+  }
 
   implicit val intCD: CD[Int] = (cell: Cell) =>
-    Either
-      .catchNonFatal(cell.getNumericCellValue)
-      .map(doubleToInt)
-      .leftMap(ParseError(cell, _))
-      .flatMap(d => Either.fromOption(d, ParseError(cell, s"$d is not an Int")))
+    cell.getCellType match {
+      case CellType.NUMERIC =>
+        val cellValue = cell.getNumericCellValue
+        if (cellValue.isValidInt)
+          Right(cellValue.toInt)
+        else
+          Left(ParseError(cell, s"numeric cell is not integer"))
+      case other =>
+        Left(ParseError(cell, s"cell type: $other cannot be decoded as integer"))
+  }
 
   implicit val doubleCD: CD[Double] = (cell: Cell) =>
-    Either.catchNonFatal(cell.getNumericCellValue).leftMap(ParseError(cell, _))
+    cell.getCellType match {
+      case CellType.NUMERIC => Right(cell.getNumericCellValue)
+      case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as double"))
+  }
 
-  implicit val localDateTimeCD: CD[LocalDateTime] = (cell: Cell) =>
-    Either
-      .catchNonFatal(cell.getDateCellValue)
-      .map(in => LocalDateTime.ofInstant(in.toInstant, ZoneId.systemDefault))
-      .leftMap(ParseError(cell, _))
+  implicit val dateTimeCD: CD[Date] = (cell: Cell) =>
+    Either.catchNonFatal(cell.getDateCellValue).leftMap(ParseError(cell, _))
+
+  implicit val localDateTimeCD: CD[LocalDateTime] =
+    dateTimeCD.map(in => LocalDateTime.ofInstant(in.toInstant, ZoneId.systemDefault))
+
+  implicit def optionCD[T](implicit dec: CD[T]): CD[Option[T]] = (cell: Cell) =>
+    cell.getCellType match {
+      case CellType.BLANK => Right(None)
+      case _              => dec.decode(cell).map(x => Some(x))
+  }
+
+  implicit def listCD[T](implicit dec: CD[T]): CD[List[T]] = optionCD[T].map(_.toList)
+
 }
 
 private[decoder] trait TupleImplicits {

@@ -1,6 +1,6 @@
 package excel.spec
 
-import excel.address.SheetAddress
+import excel.address.{ AreaAddress, SheetAddress }
 import excel.book.Book
 import excel.decoder.implicits._
 import excel.decoder.row.RowDecoder
@@ -21,7 +21,7 @@ class WorkbookSpec extends FreeSpec with Matchers {
   val example: Workbook = Book("example.xlsx").right.get
 
   "Reader" - {
-    "case class" in {
+    "case class on sheet" in {
       example
         .apply[Employee](SheetAddress("Employees"))
         .shouldBe(
@@ -29,6 +29,18 @@ class WorkbookSpec extends FreeSpec with Matchers {
             List(
               Employee(1, "Peter", "Pew", "Developer"),
               Employee(2, "Pew", "Pew", "Quality Assurance")
+            )))
+    }
+
+    "case class on area" in {
+      example
+        .apply[Employee](AreaAddress("Sheet2", 2, 1, 4, 4))
+        .shouldBe(
+          Right(
+            List(
+              Employee(1, "Peter", "Pew", "Developer"),
+              Employee(2, "Pew", "Pew", "Quality Assurance"),
+              Employee(3, "Pew", "Die", "Director")
             )))
     }
   }
