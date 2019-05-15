@@ -11,9 +11,9 @@ lazy val root = project
 
 lazy val excel = project
   .in(file("core/excel"))
-  .settings(
-    sourceGenerators in Compile += compile.boilerplate.taskValue
-  )
+//  .settings(
+//    sourceGenerators in Compile += compile.boilerplate.taskValue
+//  )
   .settings(compile.settings: _*)
   .settings(publish.settings: _*)
   .settings(
