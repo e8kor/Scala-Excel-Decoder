@@ -5,7 +5,7 @@ import sbtrelease.ReleasePlugin.autoImport.{ releaseCrossBuild, releasePublishAr
 import scala.xml.{ Elem, Node => XmlNode, NodeSeq => XmlNodeSeq }
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
 
-object publish {
+object pub {
 
   lazy val settings: Seq[Def.Setting[_]] = Seq(
     releaseCrossBuild := true,
