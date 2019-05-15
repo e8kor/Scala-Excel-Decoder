@@ -16,7 +16,7 @@ lazy val excel = project
 //    sourceGenerators in Compile += compile.boilerplate.taskValue
 //  )
   .settings(compile.settings: _*)
-  .settings(publish.settings: _*)
+  .settings(pub.settings: _*)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.5" % Test,
