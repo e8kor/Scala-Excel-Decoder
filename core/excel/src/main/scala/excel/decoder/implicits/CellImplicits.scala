@@ -42,15 +42,10 @@ private[decoder] trait CellImplicits {
   implicit val dateTimeCD: CD[Date] = (cell: Cell) =>
     Either.catchNonFatal(cell.getDateCellValue).leftMap(ParseError(cell, _))
 
-  implicit val localDateTimeCD: CD[LocalDateTime] =
-    dateTimeCD.map(in => LocalDateTime.ofInstant(in.toInstant, ZoneId.systemDefault))
-
   implicit def optionCD[T](implicit dec: CD[T]): CD[Option[T]] = (cell: Cell) =>
     cell.getCellType match {
       case CellType.BLANK => Right(None)
       case _              => dec.decode(cell).map(x => Some(x))
   }
-
-  implicit def listCD[T](implicit dec: CD[T]): CD[List[T]] = optionCD[T].map(_.toList)
 
 }

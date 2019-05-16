@@ -11,6 +11,14 @@ trait Address {
 
 }
 
+object TransposeAddress {
+
+  def apply(address: Address): Address = new Address {
+    override def rows(book: Workbook): Either[ParseError, List[List[Cell]]] = address.rows(book).map(_.transpose)
+  }
+
+}
+
 sealed trait SheetAddress extends Address {
 
   import scala.collection.JavaConverters._
