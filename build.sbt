@@ -13,10 +13,9 @@ lazy val root = project
 lazy val excel = project
   .in(file("core/excel"))
   .settings(
+    skip in publish := false,
     sourceGenerators in Compile += boilerplate.generate.taskValue
   )
-  .settings(compile.settings: _*)
-  .settings(publication.settings: _*)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.5" % Test,

@@ -1,21 +1,25 @@
-import com.typesafe.sbt.SbtPgp.autoImportImpl._
+import com.typesafe.sbt.SbtPgp.autoImport._
 import sbt._
 import sbt.Keys._
 import sbtrelease.ReleasePlugin.autoImport._
 import scala.xml.{ Elem, Node => XmlNode, NodeSeq => XmlNodeSeq }
 import scala.xml.transform._
 
-object publication {
+object publication extends AutoPlugin {
 
-  lazy val settings: Seq[Def.Setting[_]] = Seq(
+  override def trigger = allRequirements
+
+  override def projectSettings: Seq[Def.Setting[_]] = Seq(
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     homepage := Some(url("https://github.com/e8kor/Scala-Excel-Decoder")),
     licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    startYear := Some(2019),
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := (_ => false),
     autoAPIMappings := true,
+    pomExtra := Seq(),
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/e8kor/Scala-Excel-Decoder"),

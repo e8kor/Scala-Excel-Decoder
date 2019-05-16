@@ -1,4 +1,4 @@
-package excel.spec
+package excel
 
 import excel.address.{ AreaAddress, SheetAddress }
 import excel.book.Book
@@ -8,15 +8,15 @@ import excel.ops._
 import org.apache.poi.ss.usermodel.Workbook
 import org.scalatest._
 
-case class Employee(id: Int, name: String, surname: String, title: String)
+class UsageSpec extends FreeSpec with Matchers {
 
-object Employee {
+  case class Employee(id: Int, name: String, surname: String, title: String)
 
-  implicit val dec: RowDecoder[Employee] = Employee.apply _
+  object Employee {
 
-}
+    implicit val dec: RowDecoder[Employee] = Employee.apply _
 
-class WorkbookSpec extends FreeSpec with Matchers {
+  }
 
   val example: Workbook = Book("example.xlsx").right.get
 
