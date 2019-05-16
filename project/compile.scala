@@ -3,8 +3,6 @@ import sbt.Keys._
 
 object compile {
 
-  val boilerplate: Def.Initialize[Task[Seq[sbt.File]]] = (sourceManaged in Compile).map(Boilerplate.gen)
-
   val settings: Seq[Def.Setting[_]] = Seq(
     scalaVersion := "2.11.12",
     scalacOptions ++= Seq(

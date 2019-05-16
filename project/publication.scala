@@ -1,11 +1,11 @@
-import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys
+import com.typesafe.sbt.SbtPgp.autoImportImpl._
 import sbt._
 import sbt.Keys._
-import sbtrelease.ReleasePlugin.autoImport.{ releaseCrossBuild, releasePublishArtifactsAction }
+import sbtrelease.ReleasePlugin.autoImport._
 import scala.xml.{ Elem, Node => XmlNode, NodeSeq => XmlNodeSeq }
-import scala.xml.transform.{ RewriteRule, RuleTransformer }
+import scala.xml.transform._
 
-object pub {
+object publication {
 
   lazy val settings: Seq[Def.Setting[_]] = Seq(
     releaseCrossBuild := true,

@@ -1,4 +1,4 @@
-# Scala Excel Decoder
+# Scala Excel Decoder [ ![Download](https://api.bintray.com/packages/e8kor/maven/excel/images/download.svg?version=0.0.1) ](https://bintray.com/e8kor/maven/excel/0.0.1/link)
 
 ## HOW TO
 
