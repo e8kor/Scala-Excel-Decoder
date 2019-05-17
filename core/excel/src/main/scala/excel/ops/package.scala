@@ -12,18 +12,39 @@ package object ops {
 
   implicit class CellOps(private val it: Cell) extends AnyVal {
 
-    def decode[A](implicit dec: CellDecoder[A]): Decoder.Result[A] = dec(it)
+    /**
+     * Parse cell value using decoder
+     *
+     * @param dec decoder instance
+     * @tparam T output type
+     * @return error or output instance
+     */
+    def decode[T](implicit dec: CellDecoder[T]): Decoder.Result[T] = dec(it)
 
   }
 
   implicit class RowOps(private val it: List[Cell]) extends AnyVal {
 
+    /**
+     * Parse row using decoder
+     *
+     * @param dec decoder instance
+     * @tparam T output type
+     * @return error or output instance
+     */
     def decode[T](implicit dec: RowDecoder[T]): Decoder.Result[T] = dec(it)
 
   }
 
   implicit class RowsOps(private val it: List[List[Cell]]) extends AnyVal {
 
+    /**
+     * Parse rows using decoder
+     *
+     * @param dec decoder instance
+     * @tparam T output type
+     * @return error or list
+     */
     def decode[T](implicit dec: RowDecoder[T]): Decoder.Result[List[T]] = {
       it.traverse(_.decode)
     }
@@ -32,7 +53,15 @@ package object ops {
 
   implicit class BookOps(private val book: Workbook) extends AnyVal {
 
-    def apply[T: RowDecoder](address: Address): Decoder.Result[List[T]] = {
+    /**
+     * Parse book using address to read matrix and decoder to parse rows
+     *
+     * @param address rows reader
+     * @param dec decoder instance
+     * @tparam T output type
+     * @return error or list
+     */
+    def apply[T](address: Address)(implicit dec: RowDecoder[T]): Decoder.Result[List[T]] = {
       address.rows(book).flatMap(_.decode)
     }
 

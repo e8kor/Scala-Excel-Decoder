@@ -11,6 +11,9 @@ import org.apache.poi.ss.usermodel._
  */
 private[decoder] trait CellImplicits {
 
+  /**
+   * Decoder for reading text cells
+   */
   implicit val stringCD: CD[String] = (cell: Cell) =>
     cell.getCellType match {
       case CellType.STRING  => Right(cell.getStringCellValue)
@@ -20,6 +23,9 @@ private[decoder] trait CellImplicits {
       case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as string"))
   }
 
+  /**
+   * Decoder for reading natural number cells
+   */
   implicit val intCD: CD[Int] = (cell: Cell) =>
     cell.getCellType match {
       case CellType.NUMERIC =>
@@ -32,15 +38,24 @@ private[decoder] trait CellImplicits {
         Left(ParseError(cell, s"cell type: $other cannot be decoded as integer"))
   }
 
+  /**
+   * Decoder for reading all numeric cells
+   */
   implicit val doubleCD: CD[Double] = (cell: Cell) =>
     cell.getCellType match {
       case CellType.NUMERIC => Right(cell.getNumericCellValue)
       case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as double"))
   }
 
+  /**
+   * Decoder for reading date cells
+   */
   implicit val dateTimeCD: CD[Date] = (cell: Cell) =>
     Either.catchNonFatal(cell.getDateCellValue).leftMap(ParseError(cell, _))
 
+  /**
+   * Decoder for reading potentially blank cells
+   */
   implicit def optionCD[T](implicit dec: CD[T]): CD[Option[T]] = (cell: Cell) =>
     cell.getCellType match {
       case CellType.BLANK => Right(None)
