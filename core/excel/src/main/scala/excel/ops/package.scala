@@ -18,8 +18,6 @@ package object ops {
 
   implicit class RowOps(private val it: List[Cell]) extends AnyVal {
 
-    def cell(index: Int): Cell = it(index)
-
     def decode[T](implicit dec: RowDecoder[T]): Decoder.Result[T] = dec(it)
 
   }

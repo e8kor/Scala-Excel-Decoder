@@ -16,6 +16,7 @@ private[decoder] trait CellImplicits {
       case CellType.STRING  => Right(cell.getStringCellValue)
       case CellType.BOOLEAN => Right(cell.getBooleanCellValue.toString)
       case CellType.NUMERIC => Right(cell.getNumericCellValue.toString)
+      case CellType.FORMULA => Right(cell.getCellFormula)
       case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as string"))
   }
 

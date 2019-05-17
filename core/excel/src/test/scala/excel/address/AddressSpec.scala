@@ -46,6 +46,15 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
     rows.right.get should have size 3
   }
 
+  it should "use sheet name, and return no error" in new Fixture {
+    Given("Address")
+    val address = SheetAddress("Empty Sheet Case")
+    When("parse rows")
+    val rows = address.rows(book)
+    Then("no error occur")
+    rows shouldBe a[Right[_, _]]
+  }
+
   "AreaAddress" should "use formula and return all rows within formula area" in new Fixture {
     Given("Address")
     val address = AreaAddress("Employees")
