@@ -12,7 +12,9 @@ object Book {
 
   def apply(is: => InputStream): Either[ParseError, Workbook] = for {
     inputStream <- is.manage
-    book <- Either.catchNonFatal(WorkbookFactory.create(inputStream)).leftMap(e => ParseError(e.getMessage))
+    book <- Either
+      .catchNonFatal(WorkbookFactory.create(inputStream))
+      .leftMap(e => ParseError("error parsing workbook from Input Stream", e))
   } yield book
 
   def apply(resource: String): Either[ParseError, Workbook] = {
@@ -21,7 +23,7 @@ object Book {
 
   def apply(path: Path): Either[ParseError, Workbook] = {
     if (!path.exists) {
-      Left(ParseError(s"file not exists: $path"))
+      Left(ParseError(s"no workbook exists at: $path"))
     } else {
       apply(new FileInputStream(path.jfile))
     }

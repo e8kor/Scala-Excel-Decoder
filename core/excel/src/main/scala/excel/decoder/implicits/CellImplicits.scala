@@ -3,10 +3,8 @@ package excel.decoder.implicits
 import cats.implicits._
 import excel.decoder.{ CellDecoder => CD }
 import excel.exceptions.ParseError
-import java.time._
 import java.util.Date
 import org.apache.poi.ss.usermodel._
-import scala.Predef.doubleWrapper
 
 /**
  * Set of primitive decoder and lift implicits
@@ -18,6 +16,7 @@ private[decoder] trait CellImplicits {
       case CellType.STRING  => Right(cell.getStringCellValue)
       case CellType.BOOLEAN => Right(cell.getBooleanCellValue.toString)
       case CellType.NUMERIC => Right(cell.getNumericCellValue.toString)
+      case CellType.FORMULA => Right(cell.getCellFormula)
       case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as string"))
   }
 

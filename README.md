@@ -6,12 +6,11 @@ Library has a goal to provide simplistic user API. Please follow example below.
 
 ```scala
 import cats.implicits._
-import excel.address.SheetAddress
-import excel.book.Book
+import excel.address._
+import excel.book._
 import excel.decoder.RowDecoder
 import excel.decoder.implicits._
 import excel.ops._
-import org.apache.poi.ss.usermodel.Workbook
 
 case class Employee(id: Int, name: String, surname: String, title: String)
 

@@ -8,7 +8,7 @@ import excel.ops._
 import org.apache.poi.ss.usermodel.Workbook
 import org.scalatest._
 
-class UsageSpec extends FreeSpec with Matchers {
+class UsageSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   case class Employee(id: Int, name: String, surname: String, title: String)
 
@@ -18,30 +18,30 @@ class UsageSpec extends FreeSpec with Matchers {
 
   }
 
-  val example: Workbook = Book("example.xlsx").right.get
+  trait Fixture {
+    val book: Workbook = Book("UsageSpec.xlsx").right.get
+  }
 
-  "Reader" - {
-    "case class on sheet" in {
-      example
-        .apply[Employee](SheetAddress("Employees"))
-        .shouldBe(
-          Right(
-            List(
-              Employee(1, "Peter", "Pew", "Developer"),
-              Employee(2, "Pew", "Pew", "Quality Assurance")
-            )))
-    }
+  "Example 1" should "decode entities from workbook using sheet name" in new Fixture {
+    book
+      .apply[Employee](SheetAddress("Employees"))
+      .shouldBe(
+        Right(
+          List(
+            Employee(1, "Peter", "Pew", "Developer"),
+            Employee(2, "Pew", "Pew", "Quality Assurance")
+          )))
+  }
 
-    "case class on area" in {
-      example
-        .apply[Employee](AreaAddress("Sheet2", 2, 1, 4, 4))
-        .shouldBe(
-          Right(
-            List(
-              Employee(1, "Peter", "Pew", "Developer"),
-              Employee(2, "Pew", "Pew", "Quality Assurance"),
-              Employee(3, "Pew", "Die", "Director")
-            )))
-    }
+  "Example 1" should "decode entities from workbook using sheet name and coordinates" in new Fixture {
+    book
+      .apply[Employee](AreaAddress("Sheet2", 1, 2, 4, 4))
+      .shouldBe(
+        Right(
+          List(
+            Employee(1, "Peter", "Pew", "Developer"),
+            Employee(2, "Pew", "Pew", "Quality Assurance"),
+            Employee(3, "Pew", "Die", "Director")
+          )))
   }
 }
