@@ -22,10 +22,19 @@ object TransposeAddress {
 sealed trait SheetAddress extends Address {
 
   import scala.collection.JavaConverters._
-  override def rows(book: Workbook): Either[ParseError, List[List[Cell]]] = for {
-    x <- sheet(book)
-    xs = x.rowIterator().asScala.toList.map(_.cellIterator().asScala.toList)
-  } yield xs
+  override def rows(book: Workbook): Either[ParseError, List[List[Cell]]] = {
+    sheet(book).flatMap { sheet =>
+      Either
+        .catchNonFatal(sheet.rowIterator().asScala.toList)
+        .leftMap(x => ParseError(book, sheet, s"no rows on sheet: ${sheet.getSheetName}", x))
+    }.flatMap { rows =>
+      rows.map { row =>
+        Either
+          .catchNonFatal(row.cellIterator().asScala.toList)
+          .leftMap(x => ParseError(book, row, s"no cells in row: ${row.getRowNum}", x))
+      }.traverse(identity)
+    }
+  }
 
   protected def sheet(book: Workbook): Either[ParseError, Sheet]
 
@@ -35,13 +44,24 @@ object SheetAddress {
 
   def apply(name: String): SheetAddress = new SheetAddress {
     override protected def sheet(book: Workbook): Either[ParseError, Sheet] = {
-      Either.catchNonFatal(book.getSheet(name)).leftMap(x => ParseError(s"missing sheet name: $name", x))
+      Either
+        .catchNonFatal(book.getSheet(name))
+        .leftMap(x => ParseError(book, name, s"missing sheet name: $name", x))
+        .flatMap { sheet =>
+          if (sheet == null) {
+            Left(ParseError(s"missing sheet name: $name"))
+          } else {
+            Right(sheet)
+          }
+        }
     }
   }
 
   def apply(index: Int): SheetAddress = new SheetAddress {
     override protected def sheet(book: Workbook): Either[ParseError, Sheet] = {
-      Either.catchNonFatal(book.getSheetAt(index)).leftMap(x => ParseError(s"missing sheet index: $index", x))
+      Either
+        .catchNonFatal(book.getSheetAt(index))
+        .leftMap(x => ParseError(book, index, s"missing sheet index: $index", x))
     }
   }
 
@@ -49,11 +69,10 @@ object SheetAddress {
 
 sealed trait AreaAddress extends Address {
 
-  import scala.Predef.refArrayOps
-
-  private def getCell(book: Workbook, ref: CellReference): Either[ParseError, Cell] = Either
-    .catchNonFatal(book.getSheet(ref.getSheetName).getRow(ref.getRow).getCell(ref.getCol.toInt))
-    .leftMap(_ => ParseError(s"missing cell: $ref"))
+  private def getCell(book: Workbook, ref: CellReference): Option[Cell] =
+    Either.catchNonFatal(book.getSheet(ref.getSheetName).getRow(ref.getRow).getCell(ref.getCol.toInt)).toOption
+//    .leftMap(ex => ParseError(book, ref, s"missing cell: $ref", ex))
+//    .flatMap(x => Option(x).toRight(ParseError(s"cell on reference: $ref is null")): Either[ParseError, Cell])
 
   private def getMatrix(cells: List[Cell]): List[List[Cell]] = for {
     row <- cells.groupBy(_.getRowIndex).toList.sortBy(_._1)
@@ -64,7 +83,7 @@ sealed trait AreaAddress extends Address {
 
   override def rows(book: Workbook): Either[ParseError, List[List[Cell]]] = for {
     area <- area(book)
-    cells <- area.getAllReferencedCells.toList.traverse(getCell(book, _))
+    cells = area.getAllReferencedCells.toList.flatMap(getCell(book, _))
   } yield getMatrix(cells)
 
 }
@@ -83,21 +102,21 @@ object AreaAddress {
   ): Either[ParseError, AreaReference] = {
     Either
       .catchNonFatal(new AreaReference(start, end, book.getSpreadsheetVersion))
-      .leftMap(x => ParseError(s"missing cells: $start, $end", x))
+      .leftMap(x => ParseError(book, s"missing cells: $start, $end", x))
   }
 
   private def fromName(name: String)(workbook: Workbook): Either[ParseError, AreaReference] = {
     Either
       .catchNonFatal(new AreaReference(workbook.getName(name).getRefersToFormula, workbook.getSpreadsheetVersion))
-      .leftMap(x => ParseError(s"missing formula: $name", x))
+      .leftMap(x => ParseError(workbook, s"missing formula: $name", x))
   }
 
   def apply(
     sheetName: String,
-    startRowIndex: Int,
     startColumnIndex: Int,
-    endRowIndex: Int,
-    endColumnIndex: Int
+    startRowIndex: Int,
+    endColumnIndex: Int,
+    endRowIndex: Int
   ): AreaAddress = {
     val start: CellReference = cell(sheetName, startRowIndex, startColumnIndex)
     val end: CellReference = cell(sheetName, endRowIndex, endColumnIndex)

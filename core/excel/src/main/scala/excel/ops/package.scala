@@ -10,13 +10,13 @@ import org.apache.poi.ss.usermodel._
  */
 package object ops {
 
-  implicit class CellOps(val it: Cell) extends AnyVal {
+  implicit class CellOps(private val it: Cell) extends AnyVal {
 
     def decode[A](implicit dec: CellDecoder[A]): Decoder.Result[A] = dec(it)
 
   }
 
-  implicit class RowOps(val it: List[Cell]) extends AnyVal {
+  implicit class RowOps(private val it: List[Cell]) extends AnyVal {
 
     def cell(index: Int): Cell = it(index)
 
@@ -24,20 +24,18 @@ package object ops {
 
   }
 
-  implicit class RowsOps(val it: List[List[Cell]]) extends AnyVal {
-    import scala.language.postfixOps
+  implicit class RowsOps(private val it: List[List[Cell]]) extends AnyVal {
 
     def decode[T](implicit dec: RowDecoder[T]): Decoder.Result[List[T]] = {
-      it traverse (_ decode)
+      it.traverse(_.decode)
     }
 
   }
 
-  implicit class BookOps(val book: Workbook) extends AnyVal {
-    import scala.language.postfixOps
+  implicit class BookOps(private val book: Workbook) extends AnyVal {
 
     def apply[T: RowDecoder](address: Address): Decoder.Result[List[T]] = {
-      (address rows book) >>= (_ decode)
+      address.rows(book).flatMap(_.decode)
     }
 
   }

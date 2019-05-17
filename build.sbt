@@ -22,6 +22,8 @@ lazy val excel = project
       "org.typelevel" %% "cats-testkit" % "1.6.0"
     ),
     libraryDependencies ++= Seq(
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
       "com.chuusai" %% "shapeless" % "2.3.3",
       "io.tmos" %% "arm4s" % "1.1.0",
       "org.typelevel" %% "cats-core" % "1.6.0",

@@ -3,10 +3,8 @@ package excel.decoder.implicits
 import cats.implicits._
 import excel.decoder.{ CellDecoder => CD }
 import excel.exceptions.ParseError
-import java.time._
 import java.util.Date
 import org.apache.poi.ss.usermodel._
-import scala.Predef.doubleWrapper
 
 /**
  * Set of primitive decoder and lift implicits

@@ -21,6 +21,7 @@ object compile extends AutoPlugin {
       "-feature",
       "-Yrangepos",
       "-Ypartial-unification",
+      "-Ywarn-unused",
       "-Xexperimental"
     ),
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.3" cross CrossVersion.binary),
