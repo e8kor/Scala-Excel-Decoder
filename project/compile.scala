@@ -26,6 +26,7 @@ object compile extends AutoPlugin {
       "-Ywarn-unused",
       "-Xexperimental"
     ),
+    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.3" cross CrossVersion.binary),
     addCompilerPlugin(scalafixSemanticdb)
   )
