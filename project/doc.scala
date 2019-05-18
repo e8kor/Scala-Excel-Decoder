@@ -2,24 +2,31 @@
 //import com.typesafe.sbt.sbtghpages.GhpagesPlugin.autoImport._
 //import com.typesafe.sbt.site.SitePlugin.autoImport._
 //import microsites._
-//import microsites.MicrositeKeys._
-//import sbt._
+import microsites.MicrositeKeys._
+import microsites.MicrositesPlugin
+import sbt._
 //import sbt.Keys._
 //import sbtunidoc.BaseUnidocPlugin.autoImport._
 //import sbtunidoc.ScalaUnidocPlugin.autoImport._
-//
-//object doc {
+
+object doc extends AutoPlugin {
+
 //  private val filter = "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.svg" | "*.js" | "*.swf" | "*.yml" | "*.md"
-//  lazy val docSettings = Seq(
-//    micrositeName := "circe",
-//    micrositeDescription := "A JSON library for Scala powered by Cats",
-//    micrositeAuthor := "Travis Brown",
-//    micrositeHighlightTheme := "atom-one-light",
-//    micrositeHomepage := "https://circe.github.io/circe/",
-//    micrositeBaseUrl := "circe",
-//    micrositeDocumentationUrl := "api",
-//    micrositeGithubOwner := "circe",
-//    micrositeGithubRepo := "circe",
+
+  override def requires: Plugins = MicrositesPlugin
+
+  override def trigger: PluginTrigger = allRequirements
+
+  override def projectSettings: Seq[Def.Setting[_]] = Seq(
+    micrositeName := "Scala Excel Decoder",
+    micrositeDescription := "A Excel parsing library for Scala",
+    micrositeAuthor := "Eugene Korniichuk",
+    micrositeHighlightTheme := "atom-one-light",
+    micrositeHomepage := "https://e8kor.github.io/scala-excel-decoder/",
+    micrositeBaseUrl := "scala-excel-decoder",
+    micrositeDocumentationUrl := "api",
+    micrositeGithubOwner := "e8kor",
+    micrositeGithubRepo := "scala-excel-decoder",
 //    micrositeExtraMdFiles := Map(file("CONTRIBUTING.md") -> ExtraMdFileConfig("contributing.md", "docs")),
 //    micrositePalette := Map(
 //      "brand-primary" -> "#5B5988",
@@ -52,8 +59,9 @@
 //    scalacOptions ~= {
 //      _.filterNot(Set("-Yno-predef"))
 //    },
-//    git.remoteRepo := "git@github.com:circe/circe.git",
-//    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(noDocProjects(scalaVersion.value): _*),
+//    git.remoteRepo := "git@github.com:e8kor/scala-excel-decoder.git",
+//    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject,
 //    includeFilter in makeSite := filter
-//  )
-//}
+  )
+
+}

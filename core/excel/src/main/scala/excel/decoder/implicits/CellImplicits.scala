@@ -51,7 +51,11 @@ private[decoder] trait CellImplicits {
    * Decoder for reading date cells
    */
   implicit val dateTimeCD: CD[Date] = (cell: Cell) =>
-    Either.catchNonFatal(cell.getDateCellValue).leftMap(ParseError(cell, _))
+    cell.getCellType match {
+      case CellType.NUMERIC => Either.catchNonFatal(cell.getDateCellValue).leftMap(ParseError(cell, _))
+      case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as date"))
+
+  }
 
   /**
    * Decoder for reading potentially blank cells

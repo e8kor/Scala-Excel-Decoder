@@ -7,6 +7,7 @@ lazy val root = project
     ThisBuild / organization := "com.github.e8kor",
     ThisBuild / organizationName := "e8kor"
   )
+  .enablePlugins(MicrositesPlugin)
   .aggregate(excel)
   .dependsOn(excel)
 
