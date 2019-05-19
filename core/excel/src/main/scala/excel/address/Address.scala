@@ -4,7 +4,6 @@ import cats.implicits._
 import excel.exceptions.ParseError
 import org.apache.poi.ss.usermodel._
 import org.apache.poi.ss.util._
-import scala.collection.mutable
 
 /**
  * Logic Container for reading cells matrix  from workbook
@@ -17,7 +16,7 @@ trait Address {
    * @param book excel workbook
    * @return error or cells matrix depends on existence of cells and strategy
    */
-  def rows(book: Workbook): Either[ParseError, List[mutable.ListBuffer[Cell]]]
+  def rows(book: Workbook): Either[ParseError, List[List[Cell]]]
 
 }
 
@@ -34,8 +33,8 @@ sealed trait SheetAddress extends Address {
    * @param book excel workbook
    * @return error or cells matrix depends on existence of cells and strategy
    */
-  override def rows(book: Workbook): Either[ParseError, List[mutable.ListBuffer[Cell]]] =
-    sheet(book).map(_.asScala.toList.map(_.asScala.to[mutable.ListBuffer]))
+  override def rows(book: Workbook): Either[ParseError, List[List[Cell]]] =
+    sheet(book).map(_.asScala.toList.map(_.asScala.toList))
 
   /**
    * reads sheet from workbook or return an error in case if it is not exists
@@ -86,9 +85,9 @@ sealed trait AreaAddress extends Address {
   private def getCell(book: Workbook, ref: CellReference): Option[Cell] =
     Either.catchNonFatal(book.getSheet(ref.getSheetName).getRow(ref.getRow).getCell(ref.getCol.toInt)).toOption
 
-  private def getMatrix(cells: List[Cell]): List[mutable.ListBuffer[Cell]] = for {
+  private def getMatrix(cells: List[Cell]): List[List[Cell]] = for {
     row <- cells.groupBy(_.getRowIndex).toList.sortBy(_._1)
-    sorted = row._2.sortBy(_.getColumnIndex).to[mutable.ListBuffer]
+    sorted = row._2.sortBy(_.getColumnIndex)
   } yield sorted
 
   /**
@@ -105,7 +104,7 @@ sealed trait AreaAddress extends Address {
    * @param book excel workbook
    * @return error or cells matrix depends on existence of cells and strategy
    */
-  override def rows(book: Workbook): Either[ParseError, List[mutable.ListBuffer[Cell]]] = for {
+  override def rows(book: Workbook): Either[ParseError, List[List[Cell]]] = for {
     area <- area(book)
     cells = area.getAllReferencedCells.toList.flatMap(getCell(book, _))
   } yield getMatrix(cells)

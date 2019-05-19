@@ -25,7 +25,7 @@ class CaseClassDecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
       rowInstance(index)
     }
 
-    def row: mutable.ListBuffer[Cell] = rowInstance.clone()
+    def row: List[Cell] = rowInstance.toList
 
   }
 
@@ -54,6 +54,6 @@ class CaseClassDecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
     When("decode row")
     val result = row.decode[OuterCaseClass]
     Then("expected structure created")
-    result shouldBe Right(OuterCaseClass(100, InnerCaseClass(150, "Foo", "Bar")))
+    result shouldBe Right((Nil, OuterCaseClass(100, InnerCaseClass(150, "Foo", "Bar"))))
   }
 }

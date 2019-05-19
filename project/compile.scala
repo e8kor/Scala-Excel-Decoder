@@ -29,6 +29,7 @@ object compile extends AutoPlugin {
       "-Xexperimental"
     ),
     testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0"),
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.3" cross CrossVersion.binary),
     addCompilerPlugin(scalafixSemanticdb)
   )

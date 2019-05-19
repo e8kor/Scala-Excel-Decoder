@@ -25,7 +25,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
       rowInstance(index)
     }
 
-    def row: mutable.ListBuffer[Cell] = rowInstance.clone()
+    def row: List[Cell] = rowInstance.toList
 
   }
 
@@ -37,7 +37,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getStringCellValue))
+    result should equal(Right((Nil, cell(0).getStringCellValue)))
   }
 
   it should "decode cell value of double cell" in new CellFixture {
@@ -48,7 +48,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getNumericCellValue.toString))
+    result should equal(Right((Nil, cell(0).getNumericCellValue.toString)))
   }
 
   it should "decode cell value of boolean cell" in new CellFixture {
@@ -59,7 +59,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getBooleanCellValue.toString))
+    result should equal(Right((Nil, cell(0).getBooleanCellValue.toString)))
   }
 
   it should "decode cell value of formula cell" in new CellFixture {
@@ -70,7 +70,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getCellFormula))
+    result should equal(Right((Nil, cell(0).getCellFormula)))
   }
 
   it should "not decode cell if no value setted" in new CellFixture {
@@ -90,7 +90,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getNumericCellValue.intValue()))
+    result should equal(Right((Nil, cell(0).getNumericCellValue.intValue())))
   }
 
   it should "not decode cell value if not integer number" in new CellFixture {
@@ -119,7 +119,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getNumericCellValue))
+    result should equal(Right((Nil, cell(0).getNumericCellValue)))
   }
 
   it should "not decode cell value" in new CellFixture {
@@ -139,7 +139,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell(0).getDateCellValue))
+    result should equal(Right((Nil, cell(0).getDateCellValue)))
   }
 
   it should "not decode cell value" in new CellFixture {
@@ -159,7 +159,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("decoded value should be None")
-    result should equal(Right(None))
+    result should equal(Right((Nil, None)))
   }
 
   "Option Decoder" should "decode cell value" in new CellFixture {
@@ -170,7 +170,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("decoded value should be None")
-    result should equal(Right(Some(cell(0).getStringCellValue)))
+    result should equal(Right((Nil, Some(cell(0).getStringCellValue))))
   }
 
 }

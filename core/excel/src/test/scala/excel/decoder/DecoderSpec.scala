@@ -23,7 +23,7 @@ class DecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
       rowInstance(index)
     }
 
-    def row: mutable.ListBuffer[Cell] = rowInstance.clone()
+    def row: List[Cell] = rowInstance.toList
 
   }
 
@@ -33,18 +33,18 @@ class DecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("integer cell")
     withCell(_.setCellValue(100))
     When("decoder and map result")
-    val result = implicits.intCD.map(IntegerValue.apply)(row)
+    val result = implicits.intCD.map(x => x._1 -> IntegerValue(x._2))(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("value should match")
-    result shouldBe Right(IntegerValue(cell(0).getNumericCellValue.toInt))
+    result shouldBe Right((Nil, IntegerValue(cell(0).getNumericCellValue.toInt)))
   }
 
   "Decoder" should "allow to map parsed things, but keep errors" in new CellFixture {
     Given("integer cell")
     withCell(_.setCellValue(100.2))
     When("decoder and map result")
-    val result = implicits.intCD.map(IntegerValue.apply)(row)
+    val result = implicits.intCD.map(x => x._1 -> IntegerValue(x._2))(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }

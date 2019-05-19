@@ -82,7 +82,45 @@ object boilerplate {
       (headerLines ++ preBody ++ instances ++ postBody).mkString("\n")
     }
   }
-
+//
+//  object GenTupleImplicits extends Template {
+//
+//    override def range: IndexedSeq[Int] = 1 to maxArity
+//
+//    override def filename(root: File): File = root / "excel" / "decoder" / "implicits" / "TupleImplicits.scala"
+//
+//    override def content(tv: TemplateVals): String = {
+//      import tv._
+//
+//      val lines: Seq[String] = (0 until arity).map(n => s"(row, a$n) <- row.decode[A$n]")
+//
+//      val instances = synTypes.map(tpe => s"decode$tpe: RD[$tpe]").mkString(", ")
+//
+//      // @formatter:off
+//      block"""
+//        |package excel.decoder.implicits
+//        |
+//        |import cats.implicits._
+//        |import excel.decoder.{ RowDecoder => RD }
+//        |import excel.ops._
+//        |import org.apache.poi.ss.usermodel.Cell
+//        |
+//        |private [implicits] trait TupleImplicits {
+//        -
+//        -  /**
+//        -   * @group Tuple
+//        -   */
+//        -  implicit final def tuple$arity[${`A..N`}](implicit $instances): RD[${`(A..N)`}] = (row: List[Cell]) =>
+//        -    for {
+//        -      ${lines.mkString("\n        -      ")}
+//        -    } yield (row, ${`(a..n)`})
+//        -
+//        |}
+//      """
+//      // @formatter:on
+//    }
+//  }
+//
   object GenTupleImplicits extends Template {
 
     override def range: IndexedSeq[Int] = 1 to maxArity
@@ -93,7 +131,7 @@ object boilerplate {
       import tv._
 
       val lines: Seq[String] = {
-        (0 until arity).map(n => s"a$n <- row.decode[A$n]")
+        (0 until arity).map(n => s"(row, a$n) <- row.decode[A$n]")
       }
 
       val instances = synTypes.map(tpe => s"decode$tpe: RD[$tpe]").mkString(", ")
@@ -106,17 +144,16 @@ object boilerplate {
         |import excel.decoder.{ RowDecoder => RD }
         |import excel.ops._
         |import org.apache.poi.ss.usermodel.Cell
-        |import scala.collection.mutable.{ ListBuffer => LB}
         |
         |private [implicits] trait TupleImplicits {
         -
         -  /**
         -   * @group Tuple
         -   */
-        -  implicit final def tuple$arity[${`A..N`}](implicit $instances): RD[${`(A..N)`}] = (row: LB[Cell]) =>
+        -  implicit final def tuple$arity[${`A..N`}](implicit $instances): RD[${`(A..N)`}] = (row: List[Cell]) =>
         -    for {
         -      ${lines.mkString("\n        -      ")}
-        -    } yield ${`(a..n)`}
+        -    } yield (row, ${`(a..n)`})
         -
         |}
       """
@@ -147,7 +184,7 @@ object boilerplate {
         -   */
         -  implicit final def product$arity[T, ${`A..N`}](f: (${`A..N`}) => T)(implicit dec: RD[${`(A..N)`}]): RD[T] =
         -  dec.map {
-        -    case ${`(a..n)`} => f(${`a..n`})
+        -    case (row, ${`(a..n)`}) => (row, f(${`a..n`}))
         -  }
         -
         |}
