@@ -1,145 +1,161 @@
 package excel.decoder
 
+import com.typesafe.scalalogging.LazyLogging
 import java.util.Date
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.scalatest.{ FlatSpec, GivenWhenThen, Matchers }
+import scala.collection.mutable
 
 class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
 
-  trait CellFixture {
+  trait CellFixture extends LazyLogging {
 
-    val cell: Cell = new XSSFWorkbook().createSheet().createRow(0).createCell(0)
+    private var columnIndex = 0
+    private val rowInstance: mutable.ListBuffer[Cell] = mutable.ListBuffer.empty
+
+    def withCell(f: Cell => Unit): Unit = {
+      val cell: Cell = new XSSFWorkbook().createSheet().createRow(0).createCell(columnIndex)
+      columnIndex += 1
+      f(cell)
+      rowInstance.append(cell)
+    }
+
+    def cell(index: Int): Cell = {
+      rowInstance(index)
+    }
+
+    def row: mutable.ListBuffer[Cell] = rowInstance.clone()
 
   }
 
   "String Cell Decoder" should "decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue("1")
+    withCell(_.setCellValue("1"))
     When("decode value")
-    val result = implicits.stringCD.decode(cell)
+    val result = implicits.stringCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getStringCellValue))
+    result should equal(Right(cell(0).getStringCellValue))
   }
 
   it should "decode cell value of double cell" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue(1.2)
+    withCell(_.setCellValue(1.2))
     When("decode value")
-    val result = implicits.stringCD.decode(cell)
+    val result = implicits.stringCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getNumericCellValue.toString))
+    result should equal(Right(cell(0).getNumericCellValue.toString))
   }
 
   it should "decode cell value of boolean cell" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue(true)
+    withCell(_.setCellValue(true))
     When("decode value")
-    val result = implicits.stringCD.decode(cell)
+    val result = implicits.stringCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getBooleanCellValue.toString))
+    result should equal(Right(cell(0).getBooleanCellValue.toString))
   }
 
   it should "decode cell value of formula cell" in new CellFixture {
     Given("cell testificant")
-    cell.setCellFormula("SQRT(4)")
+    withCell(_.setCellFormula("SQRT(4)"))
     When("decode value")
-    val result = implicits.stringCD.decode(cell)
+    val result = implicits.stringCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getCellFormula))
+    result should equal(Right(cell(0).getCellFormula))
   }
 
   it should "not decode cell if no value setted" in new CellFixture {
     Given("cell testificant")
-    //cell
+    withCell(_ => ())
     When("decode value")
-    val result = implicits.stringCD.decode(cell)
+    val result = implicits.stringCD.decode(row)
     Then("no error occur")
     result shouldBe a[Left[_, _]]
   }
 
   "Integer Cell Decoder" should "decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue(1)
+    withCell(_.setCellValue(1))
     When("decode value")
-    val result = implicits.intCD.decode(cell)
+    val result = implicits.intCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getNumericCellValue.intValue()))
+    result should equal(Right(cell(0).getNumericCellValue.intValue()))
   }
 
   it should "not decode cell value if not integer number" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue(1.2)
+    withCell(_.setCellValue(1.2))
     When("decode value")
-    val result = implicits.intCD.decode(cell)
+    val result = implicits.intCD.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
 
   it should "not decode cell value if not numeric" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue("1")
+    withCell(_.setCellValue("1"))
     When("decode value")
-    val result = implicits.intCD.decode(cell)
+    val result = implicits.intCD.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
 
   "Double Cell Decoder" should "decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue(1.2D)
+    withCell(_.setCellValue(1.2D))
     When("decode value")
-    val result = implicits.doubleCD.decode(cell)
+    val result = implicits.doubleCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getNumericCellValue))
+    result should equal(Right(cell(0).getNumericCellValue))
   }
 
   it should "not decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue("1.2D")
+    withCell(_.setCellValue("1.2D"))
     When("decode value")
-    val result = implicits.doubleCD.decode(cell)
+    val result = implicits.doubleCD.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
 
   "Date Cell Decoder" should "decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue(new Date())
+    withCell(_.setCellValue(new Date()))
     When("decode value")
-    val result = implicits.dateTimeCD.decode(cell)
+    val result = implicits.dateTimeCD.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
-    result should equal(Right(cell.getDateCellValue))
+    result should equal(Right(cell(0).getDateCellValue))
   }
 
   it should "not decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue("1.2D")
+    withCell(_.setCellValue("1.2D"))
     When("decode value")
-    val result = implicits.dateTimeCD.decode(cell)
+    val result = implicits.dateTimeCD.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
 
   "Option Decoder" should "not decode cell value" in new CellFixture {
     Given("cell testificant")
-    //cell
+    withCell(_ => ())
     When("decode value")
-    val result = implicits.optionCD[Date](implicits.dateTimeCD).decode(cell)
+    val result = implicits.optionRD[Date](implicits.dateTimeCD).decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("decoded value should be None")
@@ -148,13 +164,13 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   "Option Decoder" should "decode cell value" in new CellFixture {
     Given("cell testificant")
-    cell.setCellValue("Foo")
+    withCell(_.setCellValue("Foo"))
     When("decode value")
-    val result = implicits.optionCD[String](implicits.stringCD).decode(cell)
+    val result = implicits.optionRD[String](implicits.stringCD).decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("decoded value should be None")
-    result should equal(Right(Some(cell.getStringCellValue)))
+    result should equal(Right(Some(cell(0).getStringCellValue)))
   }
 
 }

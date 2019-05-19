@@ -93,26 +93,27 @@ object boilerplate {
       import tv._
 
       val lines: Seq[String] = {
-        (0 until arity).map(n => s"a$n <- row($n).decode[A$n]")
+        (0 until arity).map(n => s"a$n <- row.decode[A$n]")
       }
 
-      val instances = synTypes.map(tpe => s"decode$tpe: CD[$tpe]").mkString(", ")
+      val instances = synTypes.map(tpe => s"decode$tpe: RD[$tpe]").mkString(", ")
 
       // @formatter:off
       block"""
         |package excel.decoder.implicits
         |
         |import cats.implicits._
-        |import excel.decoder.{ CellDecoder => CD, RowDecoder => RD }
+        |import excel.decoder.{ RowDecoder => RD }
         |import excel.ops._
         |import org.apache.poi.ss.usermodel.Cell
+        |import scala.collection.mutable.{ ListBuffer => LB}
         |
         |private [implicits] trait TupleImplicits {
         -
         -  /**
         -   * @group Tuple
         -   */
-        -  implicit final def tuple$arity[${`A..N`}](implicit $instances): RD[${`(A..N)`}] = (row: List[Cell]) =>
+        -  implicit final def tuple$arity[${`A..N`}](implicit $instances): RD[${`(A..N)`}] = (row: LB[Cell]) =>
         -    for {
         -      ${lines.mkString("\n        -      ")}
         -    } yield ${`(a..n)`}
