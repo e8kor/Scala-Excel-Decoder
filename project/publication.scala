@@ -14,7 +14,7 @@ object publication extends AutoPlugin {
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     homepage := Some(url("https://github.com/e8kor/Scala-Excel-Decoder")),
     description := "Best Excel parser library for Scala you ever imagined",
-    licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     startYear := Some(2019),
     publishMavenStyle := true,
     publishArtifact in Test := false,
