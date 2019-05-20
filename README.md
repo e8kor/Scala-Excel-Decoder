@@ -1,4 +1,4 @@
-# Scala Excel Decoder [ ![Download](https://api.bintray.com/packages/e8kor/maven/excel/images/download.svg?version=0.0.2) ](https://bintray.com/e8kor/maven/excel/0.0.2/link)
+# Scala Excel Decoder [ ![Download](https://api.bintray.com/packages/e8kor/maven/excel/images/download.svg?version=0.0.4) ](https://bintray.com/e8kor/maven/excel/0.0.4/link)
 Scala Excel Decoder library, takes excel workbook, its areas, and parses Scala structures from it.
 
 ## HOW TO
@@ -7,7 +7,7 @@ Add to your SBT
 
 ```sbtshell
 resolvers += Resolver.bintrayRepo("e8kor", "maven")
-libraryDependencies += "com.github.e8kor" %% "excel" % "0.0.2"
+libraryDependencies += "com.github.e8kor" %% "excel" % "0.0.4"
 ```
 
 Library has a goal to provide simplistic user API. Please follow example below.
