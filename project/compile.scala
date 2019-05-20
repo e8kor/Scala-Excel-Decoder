@@ -8,10 +8,12 @@ object compile extends AutoPlugin {
   override def trigger = allRequirements
 
   override def buildSettings: Seq[Def.Setting[_]] = Seq(
+    ThisBuild / scalaVersion := "2.11.12",
+    ThisBuild / crossScalaVersions := Seq("2.11.12", "2.12.8"),
+    ThisBuild / organization := "com.github.e8kor",
+    ThisBuild / organizationName := "e8kor",
     coverageHighlighting := true,
     coverageScalacPluginVersion := "1.3.1",
-    scalaVersion := "2.11.12",
-    crossScalaVersions := Seq("2.11.12", "2.12.8"),
     coverageExcludedPackages := "excel.decoder.implicits.TupleImplicits;excel.decoder.implicits.ProductImplicits"
   )
 

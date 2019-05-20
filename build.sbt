@@ -1,11 +1,7 @@
 lazy val root = project
   .in(file("."))
   .settings(
-    skip in publish := true,
-    ThisBuild / scalaVersion := "2.11.12",
-    ThisBuild / version := "0.1.0-SNAPSHOT",
-    ThisBuild / organization := "com.github.e8kor",
-    ThisBuild / organizationName := "e8kor"
+    skip in publish := true
   )
   .enablePlugins(MicrositesPlugin)
   .aggregate(excel)
