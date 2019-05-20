@@ -3,12 +3,27 @@ package excel.decoder
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.scalatest.{ FlatSpec, GivenWhenThen, Matchers }
+import scala.collection.mutable
 
 class DecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   trait CellFixture {
 
-    val cell: Cell = new XSSFWorkbook().createSheet().createRow(0).createCell(0)
+    private var columnIndex = 0
+    private val rowInstance: mutable.ListBuffer[Cell] = mutable.ListBuffer.empty
+
+    def withCell(f: Cell => Unit): Unit = {
+      val cell: Cell = new XSSFWorkbook().createSheet().createRow(0).createCell(columnIndex)
+      columnIndex += 1
+      f(cell)
+      rowInstance.append(cell)
+    }
+
+    def cell(index: Int): Cell = {
+      rowInstance(index)
+    }
+
+    def row: mutable.ListBuffer[Cell] = rowInstance.clone()
 
   }
 
@@ -16,20 +31,20 @@ class DecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   "Decoder" should "allow to map parsed things" in new CellFixture {
     Given("integer cell")
-    cell.setCellValue(100)
+    withCell(_.setCellValue(100))
     When("decoder and map result")
-    val result = implicits.intCD.map(IntegerValue.apply)(cell)
+    val result = implicits.intCD.map(IntegerValue.apply)(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("value should match")
-    result shouldBe Right(IntegerValue(cell.getNumericCellValue.toInt))
+    result shouldBe Right(IntegerValue(cell(0).getNumericCellValue.toInt))
   }
 
   "Decoder" should "allow to map parsed things, but keep errors" in new CellFixture {
     Given("integer cell")
-    cell.setCellValue(100.2)
+    withCell(_.setCellValue(100.2))
     When("decoder and map result")
-    val result = implicits.intCD.map(IntegerValue.apply)(cell)
+    val result = implicits.intCD.map(IntegerValue.apply)(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }

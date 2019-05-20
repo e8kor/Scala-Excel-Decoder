@@ -20,19 +20,25 @@ import excel.decoder.RowDecoder
 import excel.decoder.implicits._
 import excel.ops._
 
-case class Employee(id: Int, name: String, surname: String, title: String)
+case class Address(city:String, street:String)
+
+object Address {
+  implicit val dec: RowDecoder[Address] = Address.apply _
+}
+
+case class Employee(id: Int, name: String, surname: String, title: String, address:Address)
 
 object Employee {
   implicit val dec: RowDecoder[Employee] = Employee.apply _
 }
 
 for {
- book <- Book("example.xlsx")
+ book <- Book("workbook.xlsx")
  items <- book[Employee](SheetAddress("Employees"))
 } yield items
 
 for {
- book <- Book("example.xlsx")
+ book <- Book("workbook.xlsx")
  items <- book[Employee](AreaAddress("Sheet2", 2, 1, 4, 4))
 } yield items
 

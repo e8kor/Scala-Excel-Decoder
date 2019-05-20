@@ -4,26 +4,27 @@ import cats.implicits._
 import excel.address.Address
 import excel.decoder._
 import org.apache.poi.ss.usermodel._
+import scala.collection.mutable
 
 /**
  * Set of ops implicits for apache poi types
  */
 package object ops {
 
-  implicit class CellOps(private val it: Cell) extends AnyVal {
+//  implicit class CellOps(private val it: Cell) extends AnyVal {
+//
+//    /**
+//     * Parse cell value using decoder
+//     *
+//     * @param dec decoder instance
+//     * @tparam T output type
+//     * @return error or output instance
+//     */
+//    def decode[T](implicit dec: CellDecoder[T]): Decoder.Result[T] = dec(it)
+//
+//  }
 
-    /**
-     * Parse cell value using decoder
-     *
-     * @param dec decoder instance
-     * @tparam T output type
-     * @return error or output instance
-     */
-    def decode[T](implicit dec: CellDecoder[T]): Decoder.Result[T] = dec(it)
-
-  }
-
-  implicit class RowOps(private val it: List[Cell]) extends AnyVal {
+  implicit class RowOps(private val it: mutable.ListBuffer[Cell]) extends AnyVal {
 
     /**
      * Parse row using decoder
@@ -36,7 +37,7 @@ package object ops {
 
   }
 
-  implicit class RowsOps(private val it: List[List[Cell]]) extends AnyVal {
+  implicit class RowsOps(private val it: List[mutable.ListBuffer[Cell]]) extends AnyVal {
 
     /**
      * Parse rows using decoder
