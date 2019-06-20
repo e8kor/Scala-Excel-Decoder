@@ -16,7 +16,7 @@ lazy val excel = project
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.5" % Test,
-      "org.typelevel" %% "cats-testkit" % "1.6.0"
+      "org.typelevel" %% "cats-testkit" % "1.6.0" % Test
     ),
     libraryDependencies ++= Seq(
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",

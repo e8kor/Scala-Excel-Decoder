@@ -14,7 +14,7 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   "SheetAddress" should "use sheet name and return all rows on page " in new Fixture {
     Given("Address")
-    val address = SheetAddress("Sheet Case")
+    val address = AddressBuilder.sheet("Sheet Case").build()
     When("parse rows")
     val rows = address.rows(book)
     Then("no error occur")
@@ -25,8 +25,8 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   it should "return error sheet not exists" in new Fixture {
     Given("Address")
-    val address1 = SheetAddress("non existing sheet")
-    val address2 = SheetAddress(100)
+    val address1 = AddressBuilder.sheet("non existing sheet").build()
+    val address2 = AddressBuilder.sheet(100).build()
     When("parse rows")
     val rows1 = address1.rows(book)
     val rows2 = address2.rows(book)
@@ -37,7 +37,7 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   it should "use sheet index and return all rows on page " in new Fixture {
     Given("Address")
-    val address = SheetAddress(1)
+    val address = AddressBuilder.sheet(1).build()
     When("parse rows")
     val rows = address.rows(book)
     Then("no error occur")
@@ -48,7 +48,7 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   it should "use sheet name, and return no error" in new Fixture {
     Given("Address")
-    val address = SheetAddress("Empty Sheet Case")
+    val address = AddressBuilder.sheet("Empty Sheet Case").build()
     When("parse rows")
     val rows = address.rows(book)
     Then("no error occur")
@@ -57,7 +57,7 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   "AreaAddress" should "use formula and return all rows within formula area" in new Fixture {
     Given("Address")
-    val address = AreaAddress("Employees")
+    val address = AddressBuilder.formula("Employees").build()
     When("parse rows")
     val rows = address.rows(book)
     Then("no error occur")
@@ -67,7 +67,7 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
   }
   it should "use formula and return error if not exists" in new Fixture {
     Given("Address")
-    val address = AreaAddress("No Formula")
+    val address = AddressBuilder.formula("No Formula").build()
     When("parse rows")
     val rows = address.rows(book)
     Then("error occur")
@@ -76,7 +76,7 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   it should "use sheet name, start and stop cell coords and return all rows within designated area" in new Fixture {
     Given("Address")
-    val address = AreaAddress("Coordinate Case", 1, 3, 4, 7)
+    val address = AddressBuilder.area("Coordinate Case")(1 -> 3, 4 -> 7).build()
     When("parse rows")
     val rows = address.rows(book)
     Then("no error occur")
@@ -84,5 +84,19 @@ class AddressSpec extends FlatSpec with GivenWhenThen with Matchers {
     And("expected rowcount")
     rows.right.get should have size 4
   }
+
+  it should "use sheet name, start, stop cell and skipped rows coords and return all rows within designated area" in
+    new Fixture {
+      Given("Address")
+      val address = AddressBuilder.area("Coordinate Case")(1 -> 3, 4 -> 7).exceptColumns(2).build()
+      When("parse rows")
+      val rows = address.rows(book)
+      Then("no error occur")
+      rows shouldBe a[Right[_, _]]
+      And("expected rowcount")
+      val data = rows.right.get
+      data.map(_ should have size 3)
+      data should have size 4
+    }
 
 }

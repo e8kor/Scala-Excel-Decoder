@@ -11,19 +11,6 @@ import scala.collection.mutable
  */
 package object ops {
 
-//  implicit class CellOps(private val it: Cell) extends AnyVal {
-//
-//    /**
-//     * Parse cell value using decoder
-//     *
-//     * @param dec decoder instance
-//     * @tparam T output type
-//     * @return error or output instance
-//     */
-//    def decode[T](implicit dec: CellDecoder[T]): Decoder.Result[T] = dec(it)
-//
-//  }
-
   implicit class RowOps(private val it: mutable.ListBuffer[Cell]) extends AnyVal {
 
     /**
