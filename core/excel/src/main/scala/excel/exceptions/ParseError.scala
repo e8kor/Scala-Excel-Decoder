@@ -4,8 +4,7 @@ import org.apache.poi.ss.usermodel._
 import org.apache.poi.ss.util._
 
 sealed trait ParseError
-
-private[exceptions] case class MParseError(text: String) extends ParseError
+case class MParseError(text: String) extends ParseError
 
 object ParseError {
 

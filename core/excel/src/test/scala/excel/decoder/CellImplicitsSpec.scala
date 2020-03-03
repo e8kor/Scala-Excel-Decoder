@@ -33,7 +33,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue("1"))
     When("decode value")
-    val result = implicits.stringCD.decode(row)
+    val result = implicits.stringDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -44,7 +44,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue(1.2))
     When("decode value")
-    val result = implicits.stringCD.decode(row)
+    val result = implicits.stringDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -55,7 +55,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue(true))
     When("decode value")
-    val result = implicits.stringCD.decode(row)
+    val result = implicits.stringDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -66,7 +66,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellFormula("SQRT(4)"))
     When("decode value")
-    val result = implicits.stringCD.decode(row)
+    val result = implicits.stringDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -77,7 +77,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_ => ())
     When("decode value")
-    val result = implicits.stringCD.decode(row)
+    val result = implicits.stringDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Left[_, _]]
   }
@@ -86,7 +86,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue(1))
     When("decode value")
-    val result = implicits.intCD.decode(row)
+    val result = implicits.integerDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -97,7 +97,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue(1.2))
     When("decode value")
-    val result = implicits.intCD.decode(row)
+    val result = implicits.integerDecoder.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
@@ -106,7 +106,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue("1"))
     When("decode value")
-    val result = implicits.intCD.decode(row)
+    val result = implicits.integerDecoder.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
@@ -115,7 +115,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue(1.2D))
     When("decode value")
-    val result = implicits.doubleCD.decode(row)
+    val result = implicits.doubleDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -126,7 +126,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue("1.2D"))
     When("decode value")
-    val result = implicits.doubleCD.decode(row)
+    val result = implicits.doubleDecoder.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
@@ -135,7 +135,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue(new Date()))
     When("decode value")
-    val result = implicits.dateTimeCD.decode(row)
+    val result = implicits.dateTimeDecoder.decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("cell value and decoded value should match")
@@ -146,7 +146,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue("1.2D"))
     When("decode value")
-    val result = implicits.dateTimeCD.decode(row)
+    val result = implicits.dateTimeDecoder.decode(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
@@ -155,7 +155,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_ => ())
     When("decode value")
-    val result = implicits.optionRD[Date](implicits.dateTimeCD).decode(row)
+    val result = implicits.optionDecoder[Date](implicits.dateTimeDecoder).decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("decoded value should be None")
@@ -166,7 +166,7 @@ class CellImplicitsSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("cell testificant")
     withCell(_.setCellValue("Foo"))
     When("decode value")
-    val result = implicits.optionRD[String](implicits.stringCD).decode(row)
+    val result = implicits.optionDecoder[String](implicits.stringDecoder).decode(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("decoded value should be None")

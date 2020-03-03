@@ -24,7 +24,7 @@ class UsageSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   "Example 1" should "decode entities from workbook using sheet name" in new Fixture {
     book
-      .apply[Employee](AddressBuilder.sheet("Employees").build())
+      .read[Employee](AddressBuilder.sheet("Employees").build())
       .shouldBe(
         Right(
           List(
@@ -35,7 +35,7 @@ class UsageSpec extends FlatSpec with GivenWhenThen with Matchers {
 
   "Example 1" should "decode entities from workbook using sheet name and coordinates" in new Fixture {
     book
-      .apply[Employee](AddressBuilder.area("Sheet2")(1 -> 2, 4 -> 4).build())
+      .read[Employee](AddressBuilder.area("Sheet2")(1 -> 2, 4 -> 4).build())
       .shouldBe(
         Right(
           List(

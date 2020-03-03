@@ -11,7 +11,7 @@ import scala.collection.mutable
  */
 package object ops {
 
-  implicit class RowOps(private val it: mutable.ListBuffer[Cell]) extends AnyVal {
+  implicit class RowOps(val it: mutable.ListBuffer[Cell]) extends AnyVal {
 
     /**
      * Parse row using decoder
@@ -24,7 +24,7 @@ package object ops {
 
   }
 
-  implicit class RowsOps(private val it: List[mutable.ListBuffer[Cell]]) extends AnyVal {
+  implicit class RowsOps(val it: List[mutable.ListBuffer[Cell]]) extends AnyVal {
 
     /**
      * Parse rows using decoder
@@ -39,7 +39,7 @@ package object ops {
 
   }
 
-  implicit class BookOps(private val book: Workbook) extends AnyVal {
+  implicit class BookOps(val book: Workbook) extends AnyVal {
 
     /**
      * Parse book using address to read matrix and decoder to parse rows
@@ -49,7 +49,7 @@ package object ops {
      * @tparam T output type
      * @return error or list
      */
-    def apply[T](address: Address)(implicit dec: RowDecoder[T]): Decoder.Result[List[T]] = {
+    def read[T](address: Address)(implicit dec: RowDecoder[T]): Decoder.Result[List[T]] = {
       address.rows(book).flatMap(_.decode)
     }
 

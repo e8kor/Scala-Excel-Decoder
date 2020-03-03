@@ -42,6 +42,12 @@ for {
  items <- book[Employee](AddressBuilder.area("Sheet2")( 2-> 1, 4-> 4).build())
 } yield items
 
+
+for {
+ book <- Book("workbook.xlsx")
+ builder = AddressBuilder.area("Sheet2")( 2-> 1, 4-> 4).ex
+ items <- book[Employee](AddressBuilder.area("Sheet2")( 2-> 1, 4-> 4).build())
+} yield items
 ```
 
 ## License

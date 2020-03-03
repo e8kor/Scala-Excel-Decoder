@@ -12,12 +12,29 @@ import scala.collection.mutable
  */
 private[decoder] trait CellImplicits {
 
+  private def withCell[T](f: Cell => Either[ParseError, T]): RD[T] = (cells: mutable.ListBuffer[Cell]) => {
+    val cell = cells.head
+    cells -= cell
+    f(cell)
+  }
+
+  /**
+   * Decoder for reading potentially blank cells
+   */
+  implicit def optionDecoder[T](implicit dec: RD[T]): RD[Option[T]] = (cells: mutable.ListBuffer[Cell]) => {
+    import cells.head
+    if (CellType.BLANK == head.getCellType) {
+      cells -= head
+      Right(None)
+    } else {
+      dec.decode(cells).map(x => Some(x))
+    }
+  }
+
   /**
    * Decoder for reading text cells
    */
-  implicit val stringCD: RD[String] = (cells: mutable.ListBuffer[Cell]) => {
-    val cell = cells.head
-    cells -= cell
+  implicit val stringDecoder: RD[String] = withCell { cell =>
     cell.getCellType match {
       case CellType.STRING  => Right(cell.getStringCellValue)
       case CellType.BOOLEAN => Right(cell.getBooleanCellValue.toString)
@@ -30,9 +47,7 @@ private[decoder] trait CellImplicits {
   /**
    * Decoder for reading natural number cells
    */
-  implicit val intCD: RD[Int] = (cells: mutable.ListBuffer[Cell]) => {
-    val cell = cells.head
-    cells -= cell
+  implicit val integerDecoder: RD[Int] = withCell { cell =>
     cell.getCellType match {
       case CellType.NUMERIC =>
         val cellValue = cell.getNumericCellValue
@@ -48,9 +63,7 @@ private[decoder] trait CellImplicits {
   /**
    * Decoder for reading all numeric cells
    */
-  implicit val doubleCD: RD[Double] = (cells: mutable.ListBuffer[Cell]) => {
-    val cell = cells.head
-    cells -= cell
+  implicit val doubleDecoder: RD[Double] = withCell { cell =>
     cell.getCellType match {
       case CellType.NUMERIC => Right(cell.getNumericCellValue)
       case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as double"))
@@ -60,23 +73,11 @@ private[decoder] trait CellImplicits {
   /**
    * Decoder for reading date cells
    */
-  implicit val dateTimeCD: RD[Date] = (cells: mutable.ListBuffer[Cell]) => {
-    val cell = cells.head
-    cells -= cell
+  implicit val dateTimeDecoder: RD[Date] = withCell { cell =>
     cell.getCellType match {
       case CellType.NUMERIC => Either.catchNonFatal(cell.getDateCellValue).leftMap(ParseError(cell, _))
       case other            => Left(ParseError(cell, s"cell type: $other cannot be decoded as date"))
     }
   }
 
-  /**
-   * Decoder for reading potentially blank cells
-   */
-  implicit def optionRD[T](implicit dec: RD[T]): RD[Option[T]] = (cells: mutable.ListBuffer[Cell]) => {
-    val cell = cells.head
-    cell.getCellType match {
-      case CellType.BLANK => cells -= cell; Right(None)
-      case _              => dec.decode(cells).map(x => Some(x))
-    }
-  }
 }

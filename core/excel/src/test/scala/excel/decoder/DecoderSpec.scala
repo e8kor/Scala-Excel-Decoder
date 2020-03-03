@@ -33,7 +33,7 @@ class DecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("integer cell")
     withCell(_.setCellValue(100))
     When("decoder and map result")
-    val result = implicits.intCD.map(IntegerValue.apply)(row)
+    val result = implicits.integerDecoder.map(IntegerValue.apply)(row)
     Then("no error occur")
     result shouldBe a[Right[_, _]]
     And("value should match")
@@ -44,7 +44,7 @@ class DecoderSpec extends FlatSpec with GivenWhenThen with Matchers {
     Given("integer cell")
     withCell(_.setCellValue(100.2))
     When("decoder and map result")
-    val result = implicits.intCD.map(IntegerValue.apply)(row)
+    val result = implicits.integerDecoder.map(IntegerValue.apply)(row)
     Then("error occur")
     result shouldBe a[Left[_, _]]
   }
